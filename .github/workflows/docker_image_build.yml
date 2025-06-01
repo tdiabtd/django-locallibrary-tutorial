@@ -49,4 +49,4 @@ jobs:
         sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
     - name: docker build
-      run: tag_version=1.0.0-$(date +"%Y%m%d%H%M%S");sudo docker build ./ -t django-lib:${{ env.tag_version }};docker images
+      run: tag_version=1.0.0-$(date +"%Y%m%d%H%M%S");sudo docker build ./ -t django-lib:${tag_version};docker images
