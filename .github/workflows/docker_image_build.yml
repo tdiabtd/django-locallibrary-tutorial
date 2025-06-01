@@ -24,7 +24,7 @@ jobs:
         python-version: "3.10"
 
     - name: run codeql
-      run: date; pwd; ls; tag_version=1.0.0-$(date +"%Y%m%d%H%M%S"); echo $tag_version
+      run: date; pwd; ls;
         
   docker_img_build:
     if: github.event_name == 'workflow_dispatch'
@@ -51,4 +51,14 @@ jobs:
         sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
     - name: docker build
-      run: tag_version=1.0.0-$(date +"%Y%m%d%H%M%S");sudo docker build ./ -t django-lib:${tag_version};docker images
+      run: tag_version=1.0.0-$(date +"%Y%m%d%H%M%S");sudo docker build ./ -t joea0/django-lib:${tag_version};docker images
+
+    - name: login dockerhub
+      uses: docker/login-action@v3
+      with:
+        username: ${{DOCKER_HUB_USERNAME}}
+        password: ${{DOCKER_HUB_TOKEN}}
+
+    - name: push img to docker hub
+      run: docker push joea0/django-lib:${tag_version}
+      
