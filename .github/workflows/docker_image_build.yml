@@ -56,8 +56,8 @@ jobs:
     - name: login dockerhub
       uses: docker/login-action@v3
       with:
-        username: ${{DOCKER_HUB_USERNAME}}
-        password: ${{DOCKER_HUB_TOKEN}}
+        username: ${{ sevrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN  }}
 
     - name: push img to docker hub
       run: docker push joea0/django-lib:${tag_version}
