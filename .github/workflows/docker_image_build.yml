@@ -28,8 +28,6 @@ jobs:
         date;
         pwd;
         ls;
-        echo "tag_version=1.0.0-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
-        echo "默认标签: ${{ env.tag_version }}"
         
   docker_img_build:
     if: github.event_name == 'workflow_dispatch'
@@ -44,6 +42,9 @@ jobs:
       with:
         python-version: "3.10"
 
+    - name: init tag
+      run: tag_version=1.0.0-$(date +'%Y%m%d%H%M%S')
+
     - name: Install Docker
       run: |
         sudo apt-get update
@@ -55,17 +56,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
-    - name: docker build
-      run: |
-        sudo docker build ./ -t joea0/django-lib:${{ env.tag_version }};
-        docker images
-
     - name: login dockerhub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_HUB_USERNAME }}
         password: ${{ secrets.DOCKER_HUB_TOKEN  }}
 
+    - name: docker build
+      run: |
+        sudo docker build ./ -t ${{ secrets.DOCKER_HUB_USERNAME }}/django-lib:$env.tag_version;
+        docker images
+
     - name: push img to docker hub
-      run: docker push joea0/django-lib:${{ env.tag_version }}
+      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/django-lib:$env.tag_version
       
