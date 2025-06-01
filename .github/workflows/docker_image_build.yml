@@ -64,9 +64,9 @@ jobs:
 
     - name: docker build
       run: |
-        sudo docker build ./ -t ${{ secrets.DOCKER_HUB_USERNAME }}/django-lib:$env.tag_version;
+        sudo docker build ./ -t ${{ secrets.DOCKER_HUB_USERNAME }}/django-lib:$tag_version;
         docker images
 
     - name: push img to docker hub
-      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/django-lib:$env.tag_version
+      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/django-lib:$tag_version
       
