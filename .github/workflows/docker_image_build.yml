@@ -43,7 +43,9 @@ jobs:
         python-version: "3.10"
 
     - name: init tag
-      run: tag_version=1.0.0-$(date +'%Y%m%d%H%M%S')
+      run: |
+        echo "tag_version=1.0.0-$(date +'%Y%m%d%H%M%S')" >> $GITHUB_ENV
+        echo "使用的标签: ${{ env.tag_version }}"
 
     - name: Install Docker
       run: |
@@ -64,9 +66,9 @@ jobs:
 
     - name: docker build
       run: |
-        sudo docker build ./ -t ${{ secrets.DOCKER_HUB_USERNAME }}/django-lib:$tag_version;
+        sudo docker build ./ -t ${{ secrets.DOCKER_HUB_USERNAME }}/django-lib:${{ env.tag_version }};
         docker images
 
     - name: push img to docker hub
-      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/django-lib:$tag_version
+      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/django-lib:${{ env.tag_version }}
       
