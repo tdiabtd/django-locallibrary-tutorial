@@ -2,9 +2,9 @@ name: docker_image-build
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master" , "main"]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master" , "main"]
     
 permissions:
   contents: read
@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - name: checkout4
-    - uses: actions/checkout@v4
+      uses: actions/checkout@v4
     
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
@@ -23,7 +23,7 @@ jobs:
         python-version: "3.10"
 
     - name: run codeql
-      run: date; pwd; ls; tag_version=1.0.0-$(date +"%Y%m%d%H%M%S"); tag_version
+      run: date; pwd; ls; tag_version=1.0.0-$(date +"%Y%m%d%H%M%S"); echo $tag_version
         
   docker_img_build:
     runs-on: ubuntu-latest
@@ -37,8 +37,16 @@ jobs:
       with:
         python-version: "3.10"
 
-    - name: install docker
-      run: apt-get install -y docker
+    - name: Install Docker
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ca-certificates curl
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo apt-get update
+        sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
     - name: docker build
-      run: docker build ./ -t django-lib:1.0
+      run: tag_version=1.0.0-$(date +"%Y%m%d%H%M%S");sudo docker build ./ -t django-lib:${{ env.tag_version }};docker images
